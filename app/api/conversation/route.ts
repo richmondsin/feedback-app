@@ -59,6 +59,20 @@ import { GenAIModel } from '@ibm-generative-ai/node-sdk/langchain';
 import { increaseApiLimit, checkApiLimit } from "@/lib/api-limit";
 import { checkSubscription } from "@/lib/subscription";
 
+function buildPrompt(question: string): string {
+    const prompt = `
+      <s>[INST] <<SYS>>
+      You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.
+      If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.
+      <</SYS>>
+  
+      Query: ${question} [/INST]
+  
+      Answer: `;
+    
+    return prompt;
+}
+
 export async function POST(
     req: Request
 ) {
@@ -104,7 +118,9 @@ export async function POST(
             },
         });
         
-        const MyPrompt = messages[messages.length - 1].content;
+        const prompt = messages[messages.length - 1].content;
+        const MyPrompt = buildPrompt(prompt);
+        console.log(MyPrompt);
         const response = await model.call(MyPrompt);
 
         if (!isPro) {
