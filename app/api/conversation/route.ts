@@ -120,7 +120,6 @@ export async function POST(
         
         const prompt = messages[messages.length - 1].content;
         const MyPrompt = buildPrompt(prompt);
-        console.log(MyPrompt);
         const response = await model.call(MyPrompt);
 
         if (!isPro) {
