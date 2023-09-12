@@ -137,7 +137,6 @@ export async function POST(
         conversationHistory.push({ question: prompt });
 
         const MyPrompt = buildPrompt(conversationHistory);
-        console.log(MyPrompt);
 
         // Generate a response based on the prompt
         const response = await model.call(MyPrompt);
@@ -147,7 +146,6 @@ export async function POST(
 
         // Save the AI's response in the conversation history
         conversationHistory.push({ answer: response });
-        console.log(response)
 
         if (!isPro) {
             await increaseApiLimit();
