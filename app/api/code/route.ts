@@ -64,6 +64,32 @@ import { GenAIModel } from '@ibm-generative-ai/node-sdk/langchain';
 import { increaseApiLimit, checkApiLimit } from "@/lib/api-limit";
 import { checkSubscription } from "@/lib/subscription";
 
+const conversationHistory: ({ question?: string, answer?: string })[] = [];
+
+function buildPrompt(conversationHistory: ({ question?: string, answer?: string })[]): string {
+    let conversationHistoryStr = "";
+
+    // Build the conversation history portion
+    for (const entry of conversationHistory) {
+        if (entry.question) {
+            conversationHistoryStr += `\nQuestion: ${entry.question}`;
+        }
+        if (entry.answer) {
+            conversationHistoryStr += `\nAnswer: ${entry.answer}`;
+        }
+    }
+
+    const prompt = `
+      <s>[INST] <<SYS>>
+      You are a helpful, respectful, and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.
+      If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information. You are a code generator. You must answer only in markdown code snippets. Provide explanation for the code. Use code comments for explanations.
+      </SYS>>
+  
+      Conversation History:${conversationHistoryStr}[/INST]`; 
+
+    return prompt;
+}
+
 export async function POST(
     req: Request
 ) {
@@ -111,14 +137,28 @@ export async function POST(
             },
         });
         
-        const MyPrompt = "You are a code generator. You must answer only in markdown code snippets. Provide explanation for the code. Use code comments for explanations. \n\n" + messages[messages.length - 1].content;
+        // Extract the last message's content as the prompt
+        const prompt = messages[messages.length - 1].content;
+        
+        // Add the current question to the conversation history
+        conversationHistory.push({ question: prompt });
+
+        const MyPrompt = buildPrompt(conversationHistory);
+
+        // Generate a response based on the prompt
         const response = await model.call(MyPrompt);
+
+        // Remove "Answer: " prefix from the response
+        const responseWithoutPrefix = response.replace("Answer: ", "");
+
+        // Save the AI's response in the conversation history
+        conversationHistory.push({ answer: response });
 
         if (!isPro) {
             await increaseApiLimit();
         }
         
-        return NextResponse.json(response);
+        return NextResponse.json(responseWithoutPrefix);
     } catch (error) {
         console.log("[CODE_ERROR]", error);
         return new NextResponse("Internal error", { status: 500 });
