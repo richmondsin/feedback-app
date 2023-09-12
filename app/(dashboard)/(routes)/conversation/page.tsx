@@ -196,9 +196,12 @@ const ConversationPage = () => {
             const response = await axios.post("/api/conversation", {
                 messages: newMessages,
             });
-            const airesponse = {role: "ai",content:response.data}
+            const assistantResponse: { role: string; content: string } = {
+                role: "assistant",
+                content:response.data,
+            };
             
-            setMessages((current) => [...current, userMessage, airesponse]);
+            setMessages((current) => [...current, userMessage, assistantResponse]);
             form.reset();
         } catch (error: any) {
             if (error?.response?.status === 403) {
