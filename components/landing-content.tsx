@@ -4,27 +4,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const testimonials = [
   {
-    name: "Joel",
-    avatar: "J",
+    name: "Ignatius",
+    avatar: "I",
     title: "Software Engineer",
     description: "This is the best application I've ever used!",
   },
   {
-    name: "Antonio",
-    avatar: "A",
+    name: "Ben",
+    avatar: "B",
     title: "Designer",
     description: "I use this daily for generating new photos!",
   },
   {
     name: "Mark",
     avatar: "M",
-    title: "CEO",
+    title: "CTO",
     description: "This app has changed my life, cannot imagine working without it!",
   },
   {
-    name: "Mary",
-    avatar: "M",
-    title: "CFO",
+    name: "Richmond",
+    avatar: "R",
+    title: "CEO",
     description: "The best in class, definitely worth the premium subscription!",
   },
 ];
