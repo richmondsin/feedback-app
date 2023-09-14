@@ -143,7 +143,7 @@ export async function POST(
 
         // Remove "Answer: " prefix from the response
         const responseWithoutPrefix = response.replace("Answer: ", "");
-
+        const responseWithoutPrefix2 = response.replace("Assistant: ", "");
         // Save the AI's response in the conversation history
         conversationHistory.push({ answer: response });
 
@@ -151,7 +151,7 @@ export async function POST(
             await increaseApiLimit();
         }
 
-        return NextResponse.json(responseWithoutPrefix);
+        return NextResponse.json(responseWithoutPrefix2);
     } catch (error) {
         console.log("[CONVERSATION_ERROR]", error);
         return new NextResponse("Internal error", { status: 500 });
